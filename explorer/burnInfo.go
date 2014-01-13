@@ -7,6 +7,7 @@ import (
     "errors"
     "sort"
     "sync"
+    "log"
 )
 
 // ============== for Parsing =======================
@@ -198,11 +199,13 @@ func (li StatusPairList) Less(i, j int) bool {
 func getResult() (output string) {
     currentHeightResp, err := http.Get("https://blockchain.info/q/getblockcount")
     if err != nil {
-        return err.Error()
+        log.Print(err)
+        return ""
     }
     currentHeight, err := ioutil.ReadAll(currentHeightResp.Body)
     if err != nil {
-        return err.Error()
+        log.Print(err)
+        return ""
     }
     currentHeightResp.Body.Close()
     gMutex.Lock()
@@ -218,14 +221,16 @@ func getResult() (output string) {
         requestStr := fmt.Sprintf("https://blockchain.info/address/%s?format=json&limit=50&offset=%d", BURN_ADDRESS, offset)
         resp, err := http.Get(requestStr)
         if err != nil {
-            return err.Error()
+            log.Print(err)
+            return ""
         }
         res, err := ioutil.ReadAll(resp.Body)
         resp.Body.Close()
         var result Result
         err = json.Unmarshal(res, &result)
         if err != nil {
-            return err.Error()
+            log.Print(err)
+            return ""
         }
         /*
         if result.NTx == globalTransactionCount {
