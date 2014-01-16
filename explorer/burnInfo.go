@@ -77,8 +77,7 @@ func (status *Status) String() string {
 }
 
 var (
-    globalStatusMap = make(map[string]*Status)
-    globalTransactionCount int
+    globalTransactions     map[string]*Transaction
     globalBlockHeight      string
     globalOutputText       string
     gMutex sync.Mutex
@@ -232,12 +231,9 @@ func getResult() (output string) {
             log.Print(err)
             return ""
         }
-        /*
         if result.NTx == globalTransactionCount {
             return fmt.Sprintf("current block height: %s\ncurrent transaction count: %d\n%d\n%s", string(currentHeight), result.NTx, globalTransactionCount, globalOutputText)
         }
-        */
-        globalTransactionCount = result.NTx
         if offset == 0 {
             output += fmt.Sprintf("BTC burnt:\t%.8f\n", float64(result.TotalReceived) * 1e-8)
         }
@@ -258,9 +254,11 @@ func getResult() (output string) {
                 status.Overflowed = true
                 status.Error = errors.New("Exceeds 1 BTC limit")
             }
+            globalHandledHashes[transaction.Hash] = true
         }
         if len(result.Txs) < 50 {
             transactionCount = offset + len(result.Txs)
+            globalTransactionCount = result.NTx
             break
         } else {
             offset += len(result.Txs)

@@ -18,5 +18,9 @@ func main() {
 func hello(res http.ResponseWriter, req *http.Request) {
     log.Print("request from ", req.RemoteAddr)
 	fmt.Fprintln(res, "Welcome to Counterpart Explorer (XCP)")
+    fmt.Fprintln(res, "Currently, only XCP obtained by burning are listed.")
+    fmt.Fprintln(res, "Please use it only to confirm your burning")
+    fmt.Fprintln(res, "Burn starts at block: ", MIN_BLOCK_HEIGHT)
+    fmt.Fprintln(res, "Burn stops  at block: ", MAX_BLOCK_HEIGHT)
     fmt.Fprintln(res, getResult())
 }
