@@ -75,20 +75,28 @@ func updateStatusFromTransaction(transaction *Transaction, statusMap map[string]
         status = &Status{}
         statusMap[record.From] = status
     }
-    records := append(status.Records, record)
-    updateStatusFromRecords(status, records)
-    if record.BlockHeight != 0 {
-        status.Records = records
+    for _, r := range status.Records {
+        if r.Hash == record.Hash {
+            if r.BlockHeight != 0 {
+                return
+            } else {
+                r.BlockHeight = record.BlockHeight
+                updateStatusFromRecords(status)
+                return
+            }
+        }
     }
+    status.Records = append(status.Records, record)
+    updateStatusFromRecords(status)
     return
 }
 
-func updateStatusFromRecords(status *Status, records []*Record) {
+func updateStatusFromRecords(status *Status) {
     status.BtcSpent = 0
     status.XcpSum = 0
     status.Error = nil
     status.Overflowed = false
-    for _, record := range records {
+    for _, record := range status.Records {
         if status.BtcSpent + record.BtcSpent <= MAX_BURNT_BTC {
             status.BtcSpent += record.BtcSpent
             status.XcpSum += record.XcpGet

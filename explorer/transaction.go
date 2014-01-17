@@ -41,11 +41,13 @@ func UpdateTransactions() (transactions []*Transaction, reorganized bool, err er
             return
         }
         for _, tx := range result.Txs {
-            _, present := gTransactions[tx.Hash]
+            t, present := gTransactions[tx.Hash]
             if !present {
                 if existed {
                     reorganized = true
                 }
+                transactions = append(transactions, tx)
+            } else if t.BlockHeight == 0 && tx.BlockHeight != 0 {
                 transactions = append(transactions, tx)
             } else {
                 existed = true
