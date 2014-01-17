@@ -3,6 +3,7 @@ import (
     "fmt"
     "errors"
     "sort"
+    "log"
 )
 // ================ For stats ===============================
 type Record struct {
@@ -78,8 +79,10 @@ func updateStatusFromTransaction(transaction *Transaction, statusMap map[string]
     for _, r := range status.Records {
         if r.Hash == record.Hash {
             if r.BlockHeight != 0 {
+                log.Print("ERROR: should not have duplicate records", r.Hash)
                 return
             } else {
+                log.Print("ERROR: replace unconfirmed record: ", r.Hash)
                 r.BlockHeight = record.BlockHeight
                 updateStatusFromRecords(status)
                 return
