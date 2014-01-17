@@ -82,8 +82,7 @@ func updateStatusFromTransaction(transaction *Transaction, statusMap map[string]
                 log.Print("ERROR: should not have duplicate records", r.Hash)
                 return
             } else {
-                r.BlockHeight = record.BlockHeight
-                r.Error = record.Error
+                r = record
                 log.Print("INFO: replace unconfirmed record: ", r.Hash, " to block ", r.BlockHeight)
                 updateStatusFromRecords(status)
                 return
